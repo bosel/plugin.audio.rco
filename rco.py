@@ -27,7 +27,7 @@ def createListing():
     # url,name,metaname
     listing = []
     # listing.append(['RCO','http://rrr.sz.xlcdn.com/?account=RCOLiveWebradio&file=mp3-192&type=live&service=icecast&port=8000&output=pls'])
-    URL = 'http://www.concertgebouworkest.nl/nl/Metamenu/RCO-Radio/'
+    URL = 'https://www.concertgebouworkest.nl/RCOradio'
     response = urllib2.urlopen(URL)
     html = response.read()
     rawlink = re.search(r'http.*?=pls', html).group(0)
