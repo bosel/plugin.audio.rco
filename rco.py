@@ -14,7 +14,9 @@ xbmc.log("plugin.video.rco:: Starting Addon")
 # magic; id of this plugin - cast to integer
 thisPlugin = int(sys.argv[1])
 
-settings = xbmcaddon.Addon(id='plugin.audio.rco')
+# settings = xbmcaddon.Addon(id='plugin.audio.rco')
+# The id is only necessary when you try to access other addons from your addon
+settings = xbmcaddon.Addon()
 IMG_DIR = os.path.join(settings.getAddonInfo("path"), "resources", "media")
 
 
@@ -63,8 +65,10 @@ def get_metadata(cleanlink):
 
 def parse_metadata(title):
     elements = re.split('; | - |\: | \(|\n', title)
-    year = re.search(r"(?<!\d)\d{4}(?!\d)", title).group(0)
-    elements.append(year)
+    try:
+        year = re.search(r"(?<!\d)\d{4}(?!\d)", title).group(0)
+        elements.append(year)
+    except: pass
     return elements
 
 
@@ -80,16 +84,17 @@ def sendToKodi(listing):
 
     # send each item to kodi
     for item in listing:
-        listItem = xbmcgui.ListItem(item[0], thumbnailImage=os.path.join(IMG_DIR, "icon.png"))
-        listItem.setInfo(type="Music", infoLabels={"Title": item[0],
-                                                   "Artist": item[2],
-                                                   "Album": item[3],
-                                                   "Genre": "Classical",
-                                                   "Comment": item[0],
-                                                   "Year": item[len(item) - 1],
-                                                   # "AlbumArtist": item[4]
-                                                   })
-        listItem.setProperty("fanart_image", os.path.join(IMG_DIR, "fanart.jpg"))
+        listItem = xbmcgui.ListItem(item[0])
+        listItem.setInfo('music', { 'genre': 'Classical', 'title': item[0], 'Artist': item[2], 'Album': item[3], 'comment': item[0], 'year': item[len(item) -1] })
+        #listItem.setInfo(type="Music", infoLabels={"Title": item[0],
+        #                                           "Artist": item[2],
+        #                                           "Album": item[3],
+        #                                           "Genre": "Classical",
+        #                                           "Comment": item[0],
+        #                                           "Year": item[len(item) - 1],
+        #                                           # "AlbumArtist": item[4]
+        #                                           })
+        listItem.setArt({"thumb":os.path.join(IMG_DIR, "icon.png"), "fanart":os.path.join(IMG_DIR, "fanart.jpg")})
         xbmcplugin.addDirectoryItem(thisPlugin, item[1], listItem)
 
     # tell xbmc we have finished creating the directory listing
